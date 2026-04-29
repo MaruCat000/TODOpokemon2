@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>クエストロードマップ：固定ルート</title>
+    <link rel="stylesheet" href="style3.css">
+</head>
+<body>
+
+    <div class="card pokemon-theme">
+        <h1>🏆 CHAMPION ROADMAP</h1>
+        <div class="duo-message" id="duo-msg">
+            今日の冒険ルートはすでに確定しているぞ！<br>
+            迷わず進め。準備こそが勝利への唯一の道だ！
+        </div>
+        <div>
+            <img src="evolution.png">
+        </div>
+        <div id="result" class="schedule-result" style="display: block;">
+            <h3>🏁 今日のロードマップ</h3>
+            <div id="timeline"></div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            generateFixedSchedule();
+        };
+
+        function generateFixedSchedule() {
+            const timeline = document.getElementById('timeline');
+
+            // --- 固定設定 ---
+            const startMin = 16 * 60;  // 16:00 行動開始
+            const endMin = 24 * 60;    // 24:00 就寝
+
+            // 曜日判定 (0:日, 1:月, 2:火, 3:水, 4:木, 5:金, 6:土)
+            const dayOfWeek = new Date().getDay();
+            // 日曜日(0)から木曜日(4)判定
+            const isSunToThu = (dayOfWeek >= 0 && dayOfWeek <= 4);
+
+            // タイムライン生成用の配列
+            let schedule = [];
+
+            // 1. 開始（準備）
+            //schedule.push({ time: startMin, task: "☀️ 起床・準備（特訓開始！）", duration: 60 });
+            schedule.push({ time: startMin, task: "🏠 帰還・特訓の準備（リフレッシュ）", duration: 60 });
+
+            // --- 2. 学校クエスト（コメントアウト） ---
+            /*
+            const schoolStartMin = 17 * 60;
+            const schoolDuration = 360;
+            const isWeekday = (dayOfWeek >= 1 && dayOfWeek <= 5);
+            if (isWeekday) {
+                schedule.push({ time: schoolStartMin, task: "🏫 学校クエスト (メイン任務)", duration: schoolDuration });
+            }
+            */
+
+            // 3. 午後のタスク計算
+            let currentMin = startMin + 60; 
+            let remainingMin = endMin - currentMin;
+
+            // 基本のクエストリスト
+            let eveningQuests = [
+                "✍️ 宿題・課題の整理", 
+                "✅ TODO消化(クリックしてチェックページに飛ぼう！) ", 
+                "🎮 自由時間・リラックス"
+            ];
+
+            // 日曜日〜木曜日のみ「装備確認」を追加
+            if (isSunToThu) {
+                eveningQuests.push("👟 翌日の装備確認（持ち物）");
+            }
+
+            // 残り時間をクエスト数で等分
+            const questDuration = Math.floor(remainingMin / eveningQuests.length);
+
+            // クエストをスケジュール配列に追加
+            eveningQuests.forEach(task => {
+                schedule.push({ time: currentMin, task: task, duration: questDuration });
+                currentMin += questDuration;
+            });
+
+            // --- 表示のレンダリング ---
+            const minToTime = (min) => {
+                const h = Math.floor(min / 60) % 24;
+                const m = Math.floor(min % 60);
+                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+            };
+
+            timeline.innerHTML = '';
+            schedule.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'time-slot';
+            
+                // --- タスク表示の生成と改行処理 ---
+                let displayName = item.task;
+                if (displayName.includes("(クリックして")) {
+                    // 改行を入れて、補足部分を少し小さくする
+                    displayName = displayName.replace("(クリックして", "<br><small>(クリックして");
+                    displayName += "</small>";
+                }
+
+                let taskHTML = `<span class="task-name">${displayName}</span> <small>(${item.duration}分)</small>`;
+            
+                if (item.task.includes("TODO")) {
+                    // TODOが含まれる場合、全体をリンクにする
+                    taskHTML = `<a href="TODOpokemon3.html" style="color: inherit; text-decoration: none; display: block;">
+                                    ${displayName} <small>(${item.duration}分) 🔗</small>
+                                </a>`;
+                    div.style.cursor = "pointer";
+                }
+        
+                div.innerHTML = `
+                    <span class="time-label">${minToTime(item.time)}</span>
+                    <span class="task-text">${taskHTML}</span>
+                `;
+                timeline.appendChild(div);
+            });
+
+            // 4. 就寝
+            const sleepDiv = document.createElement('div');
+            sleepDiv.className = 'time-slot sleep-slot';
+            sleepDiv.innerHTML = `<span class="time-label">${minToTime(endMin)}</span> <span class="task-text">🛌 ポケモンセンターへ（就寝）</span>`;
+            timeline.appendChild(sleepDiv);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>夜のチャンピオン・メンテナンス</title>
+    <link rel="stylesheet" href="style3.css">
+</head>
+<body class="night-mode">
+
+    <div class="card pokemon-theme">
+        <div class="wallet-box">
+            <div class="wallet-label">🪙 明日の自分への貯金（獲得予定）</div>
+            <div class="money-amount">P$ <span id="reward">0</span></div>
+        </div>
+
+        <h1>🏆 NIGHT MAINTENANCE</h1>
+        
+        <div id="msg" class="duo-message">
+            夜更かししてないで、明日の自分のために「装備」を整えろ！<br>
+            サボったら明日、君が困るだけだぞ。
+        </div>
+        <div>
+            <img src="evolution6.png">
+        </div>
+        
+        <div class="task-list">
+            <div class="task-item" onclick="handleTaskClick(this, 10)">
+                <input type="checkbox" onclick="event.stopPropagation()"> <span>📝 <b>学校の宿題はおわっているか</b> (+10)</span>
+            </div>
+            <div class="task-item" onclick="handleTaskClick(this, 10)">
+                <input type="checkbox" onclick="event.stopPropagation()"> <span>🔥 <b>家庭教師の宿題はおわっているか</b> (+10)</span>
+            </div>
+            <div class="task-item" onclick="handleTaskClick(this, 10)">
+                <input type="checkbox" onclick="event.stopPropagation()"> <span>🎹 <b>ピアノはひいたか</b> (+10)</span>
+            </div>
+            <div class="task-item" onclick="handleTaskClick(this, 10)">
+                <input type="checkbox" onclick="event.stopPropagation()"> <span>📩 <b>提出物はないか</b> (+10)</span>
+            </div>
+            <div class="task-item" onclick="handleTaskClick(this, 10)">
+                <input type="checkbox" onclick="event.stopPropagation()"> <span>💡 <b>家庭教師の宿題はおわっているか</b> (+10)</span>
+            </div>
+            <div class="task-item" onclick="handleTaskClick(this, 10)">
+                <input type="checkbox" onclick="event.stopPropagation()"> <span>🎒 <b>持ち物確認</b> (+10)</span>
+            </div>
+            <div class="task-item" onclick="handleTaskClick(this, 30)">
+                <input type="checkbox" onclick="event.stopPropagation()"> <span>✨ <b>すべておわっているか(最終確認)</b> (+30)</span>
+            </div>
+        </div>
+
+        <div class="footer">※送信ボタンでレポートを本部に転送せよ！</div>
+
+        <div class="btn-area">
+            <button class="send-btn" onclick="sendReport()">
+                📩 リーグ本部に報告して休む！
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let totalMoney = 0;
+        const msgBox = document.getElementById('msg');
+        const moneyDisplay = document.getElementById('reward');
+        const gasUrl = "ここにGASのAPI"; 
+
+        const successMessages = [
+            "さすがだ！ 最高の準備こそが、勝利への一番の近道だぞ！",
+            "チャリン！ 勝利の賞金が積み上がっていく音が聞こえるな！",
+            "いい準備だ。明日の朝、キミは誰よりも有利な盤面でバトルを開始できるぞ！",
+            "全ミッション完了！ さあ、レポートを書いて明日のリーグ戦に備えて休むんだ！"
+        ];
+
+        // 無限増殖を防ぐための改善版関数
+        function handleTaskClick(el, amount) {
+            const cb = el.querySelector('input');
+            
+            // 現在の状態を反転
+            cb.checked = !cb.checked;
+            
+            // クラスの付け替え
+            if (cb.checked) {
+                el.classList.add('checked');
+                totalMoney += amount;
+                msgBox.innerText = successMessages[Math.floor(Math.random() * 3)];
+            } else {
+                el.classList.remove('checked');
+                totalMoney -= amount;
+                msgBox.innerText = "おい、準備を戻すな！明日の君が泣くぞ！";
+            }
+
+            // 表示更新
+            moneyDisplay.innerText = totalMoney;
+
+            // 全チェック判定
+            const allCheckboxes = document.querySelectorAll('.task-item input[type="checkbox"]');
+            const allChecked = Array.from(allCheckboxes).every(c => c.checked);
+            
+            if (allChecked) {
+                msgBox.innerText = successMessages[3];
+                msgBox.style.color = "#ffde00"; 
+            } else {
+                msgBox.style.color = "#fff";
+            }
+        }
+
+        async function sendReport() {
+            if (totalMoney === 0) {
+                alert("何もしてないのに報酬をもらおうとするな！");
+                return;
+            }
+
+            const data = { 
+                amount: totalMoney,
+                statusType: "準備力" 
+            };
+
+            try {
+                if(gasUrl.includes("ここに")) {
+                    alert("デモ動作：本部へ送信完了！おやすみ、次なるチャンピオン！");
+                    return;
+                }
+
+                await fetch(gasUrl, {
+                    method: "POST",
+                    mode: "no-cors", 
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+            
+                alert("スプレッドシートに送信完了！準備力がアップしたぞ！");
+            } catch (e) {
+                alert("送信エラー！スクリーンショットを撮ってお母さんに送って！");
+            }
+        }
+    </script>
+</body>
+</html>
