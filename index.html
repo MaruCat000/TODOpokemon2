@@ -132,6 +132,21 @@
             sleepDiv.innerHTML = `<span class="time-label">${minToTime(endMin)}</span> <span class="task-text">🛌 ポケモンセンターへ（就寝）</span>`;
             timeline.appendChild(sleepDiv);
         }
+        
+        // 画像プレビュー用の関数
+        function previewImage(input) {
+            const file = input.files[0];
+            const reader = new FileReader();
+        
+            reader.onload = function(e) {
+                const imgElement = document.getElementById('quest-image');
+                imgElement.src = e.target.result;
+            };
+        
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
     </script>
 </body>
 </html>
