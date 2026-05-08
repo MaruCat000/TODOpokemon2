@@ -13,8 +13,16 @@
             今日の冒険ルートはすでに確定しているぞ！<br>
             迷わず進め。準備こそが勝利への唯一の道だ！
         </div>
-        <div>
-            <img src="evolution.png">
+        <!-- 変更前：<div><img src="evolution.png"></div> -->
+        <div class="image-upload-section" style="margin: 15px 0;">
+            <label for="file-input" style="cursor: pointer; background: #ffcb05; color: #2a75bb; padding: 5px 10px; border-radius: 5px; font-weight: bold; border: 2px solid #2a75bb;">
+                📸 好きな画像をUPしてね
+            </label>
+            <input id="file-input" type="file" accept="image/*" style="display: none;" onchange="previewImage(this)">
+            
+            <div style="margin-top: 10px;">
+                <img id="quest-image" src="evolution.png" style="max-width: 100%; border-radius: 10px; display: block; margin: 0 auto;">
+            </div>
         </div>
         <div id="result" class="schedule-result" style="display: block;">
             <h3>🏁 今日のロードマップ</h3>
